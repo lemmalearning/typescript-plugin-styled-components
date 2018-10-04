@@ -36,6 +36,7 @@
         "dist"
     ],
     "dependencies": {
+        "autoprefixer": "^9.1.5",
         "stylis": "^3.5.3"
     }
 }
