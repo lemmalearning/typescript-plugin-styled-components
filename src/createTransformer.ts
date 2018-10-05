@@ -352,7 +352,13 @@ export function createTransformer({ getDisplayName = defaultGetDisplayName }: Pa
                 }
                 else if(r[i].charCodeAt(0) >= START_CODE) {
 
-                    var couldBeRef = (pos === CssPosition.ElementRule && (/animation(-name)?:\s*$/i).exec(accum.trim())) || pos === CssPosition.ElementSelector;
+                    var isClassRef = pos === CssPosition.ElementSelector;
+                    var isAnimRef =  pos === CssPosition.ElementRule && (/animation(-name)?:\s*$/i).exec(accum.trim());
+
+                    // NOTE: This assumes that we do not allow regular templating in the selector
+                    if(isClassRef) {
+                        accum += '.';
+                    }
 
                     addAccum();
 
@@ -361,7 +367,7 @@ export function createTransformer({ getDisplayName = defaultGetDisplayName }: Pa
                         add(argsByCode[r[i]]);
                     }
                     // May need to add it as a new argument
-                    else if(couldBeRef) {
+                    else if(isClassRef || isAnimRef) {
                         let arg = ts.createIdentifier('expr' + exprArgs.length);
                         exprArgs.push(arg);
                         exprVals.push(exprFromChar(r[i]));
@@ -480,12 +486,6 @@ export function createTransformer({ getDisplayName = defaultGetDisplayName }: Pa
             }
         }
 
-
-        /*
-    +  const CustomLabel = styled.label(cls => [cls + "{xxxfont-size:" + (props: LabelProps) => props.size + "px" + ";font-weight:bold;-webkit-transform:translateX(-50%);transform:translateX(-50%);}", cls + " li{font-size:12px;}"]);
-
-
-        */
 
         addUpRules();
 
